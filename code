@@ -1,0 +1,238 @@
+from tkinter import *
+import mysql.connector as m
+from tkinter import messagebox
+from tkinter import ttk
+
+con=m.connect(host="localhost",user="root",passwd="root")
+cur=con.cursor()
+cur.execute("Create database if not exists project") 
+cur.execute("use project")
+cur.execute('''create table if not exists future_applicants(name varchar(30),username varchar(30),
+                 password varchar(8),phno varchar(10),emailid varchar(30))''')
+
+def college(val):
+    global canvas 
+    canvas.destroy()
+    canvas=Canvas(window,bg="black",height=500,width=500,relief='raise')
+    canvas.place(x=0,y=0)
+    tree=ttk.Treeview(canvas)
+    tree["show"]='headings'
+    s=ttk.Style(canvas)
+    s.theme_use("clam")
+    s.configure(".",font=('Bahnschrift SemiBold',12))
+    s.configure("Treeview.Heading",fg="red",font=('Bahnschrift SemiBold',12))
+    tree["columns"]=("COLLEGE NAME","LOCATION","FEES","YEARS") 
+    tree.column("COLLEGE NAME", width=200, minwidth=200, anchor=NW)
+    tree.column("LOCATION", width=75, minwidth=75, anchor=NW)
+    tree.column("FEES", width=50, minwidth=50, anchor=CENTER)
+    tree.column("YEARS", width=50, minwidth=50, anchor=CENTER)
+    tree.heading("COLLEGE NAME",text="COLLEGE NAME",anchor=CENTER)
+    tree.heading("LOCATION",text="LOCATION",anchor=CENTER)
+    tree.heading("FEES",text="FEES",anchor=CENTER)
+    tree.heading("YEARS",text="YEARS",anchor=CENTER)
+    
+    cur.execute("SELECT * FROM COLLEGE where course='{}'".format(val))
+    recs=cur.fetchall()
+    i=0
+    for j in recs:
+        tree.insert("",i,text="",values=(j[1],j[2],j[4],j[5]))
+        i=i+1
+    tree.place(x = 10, y = 10, width=480, height=480)
+    reback=Button(canvas,text='BACK',font=("algerian",15),borderwidth=2,relief="raise", bg='red',fg='black',command=login)
+    reback.place(x=390,y=460,width = 100,height = 30)
+  
+def Registration():
+    def insert_rec():
+        if e1.get()!='' and e2.get()!='' and e3.get()!='' and e4.get()!='' and e5.get()!='':
+            cur.execute("insert into future_applicants values('{}','{}','{}','{}','{}')".format(e1.get(),e2.get(),e3.get(),e4.get(),e5.get()))
+            messagebox.showinfo('ALERT!',"registered successfully")
+            con.commit()
+            login()
+        else:
+            messagebox.showinfo("Warning",'Enter Valid details.')
+            Registration()
+          
+    global canvas
+    canvas.destroy()
+    canvas=Canvas(window,bg="black",height=500,width=500,relief='raise')
+    canvas.place(x=0,y=0)
+    l0=Label(canvas,text="NEW USER",font=("Stencil",24,'underline'),bg="black",fg="white")
+    l0.place(x=180,y=30)
+    l1=Label(canvas,text="Name:",font=("Stencil",20),bg="black",fg="white")
+    l1.place(x=70,y=110)
+    e1=Entry(canvas,font=("Constantia",16),borderwidth=1)
+    e1.place(x=230,y=115, width = 180,height = 25)
+    l2=Label(canvas,text="UserName:",font=("Stencil",20),bg="black",fg="white")
+    l2.place(x=70,y=170)
+    e2=Entry(canvas,font=("Constantia",16),borderwidth=1)
+    e2.place(x=230,y=175, width = 180,height = 25)
+    l3=Label(canvas,text="Password:",font=("Stencil",20),bg="black",fg="white")
+    l3.place(x=70,y=230)
+    e3=Entry(canvas,font=("Constantia",16),borderwidth=1)
+    e3.place(x=230,y=235, width = 180,height = 25)
+    l4=Label(canvas,text="Phone No:",font=("Stencil",20),bg="black",fg="white")
+    l4.place(x=70,y=290)
+    e4=Entry(canvas,font=("Constantia",16),borderwidth=1)
+    e4.place(x=230,y=295, width = 180,height = 25)
+    l5=Label(canvas,text="Email-ID:",font=("Stencil",20),bg="black",fg="white")
+    l5.place(x=70,y=350)
+    e5=Entry(canvas,font=("Constantia",16),borderwidth=1)
+    e5.place(x=230,y=355, width = 180,height = 25)
+    SigU=Button(canvas,text='Register',font=("algerian",15),borderwidth=2,relief="raise",bg='red',fg='black',command=insert_rec)
+    SigU.place(x=210,y=410,width = 120,height = 35)
+    reback=Button(canvas,text='BACK',font=("algerian",15),borderwidth=2,relief="raise", bg='red',fg='black',command=Main_page)
+    reback.place(x=390,y=460,width = 100,height = 30)
+            
+def Sci_page():
+    global canvas
+    canvas.destroy()
+    canvas=Canvas(window,bg="black",height=500,width=500,relief='raise')
+    canvas.place(x=0,y=0)
+    canvas.create_text(250, 50, text='SCIENCE', fill="WHITE", font=('Stencil',30,'bold'))
+    Sci1=Button(canvas,text='BPT',font=("Arial Black",16),relief="raise",bg='white',command=lambda val='BPT':college(val))
+    Sci1.place(x=20,y=110,width=140,height=50)
+    Sci2=Button(canvas,text='B.Arch',font=("Arial Black",16),relief="raise",bg='white',command=lambda val='B.Arch':college(val))
+    Sci2.place(x=180,y=110,width=140,height=50)
+    Sci3=Button(canvas,text='BA',font=("Arial Black",16),relief="raise",bg='white',command=lambda val='BA':college(val))
+    Sci3.place(x=340,y=110,width=140,height=50)
+    
+    Sci1=Button(canvas,text='BCA',font=("Arial Black",16),relief="raise",bg='white',command=lambda val='BCA':college(val))
+    Sci1.place(x=20,y=190,width=140,height=50)
+    Sci2=Button(canvas,text='B.Sc',font=("Arial Black",16),relief="raise",bg='white',command=lambda val='B.Sc':college(val))
+    Sci2.place(x=180,y=190,width=140,height=50)
+    Sci3=Button(canvas,text='B.Sc-Nur',font=("Arial Black",16),relief="raise",bg='white',command=lambda val='B.Sc-nur':college(val))
+    Sci3.place(x=340,y=190,width=140,height=50)
+    
+    Sci1=Button(canvas,text='BPharma',font=("Arial Black",16),relief="raise",bg='white',command=lambda val='BPharma':college(val))
+    Sci1.place(x=20,y=270,width=140,height=50)
+    Sci2=Button(canvas,text='BDS',font=("Arial Black",16),relief="raise",bg='white',command=lambda val='BDS':college(val))
+    Sci2.place(x=180,y=270,width=140,height=50)
+    Sci3=Button(canvas,text='B.Sc-Nut',font=("Arial Black",16),relief="raise",bg='white',command=lambda val='B.Sc-Nut':college(val))
+    Sci3.place(x=340,y=270,width=140,height=50)
+    
+    Sci1=Button(canvas,text='BE/B.Tech',font=("Arial Black",16),relief="raise",bg='white',command=lambda val='BE/B.Tech':college(val))
+    Sci1.place(x=20,y=350,width=220,height=50)
+    Sci2=Button(canvas,text='B.Sc-Geo',font=("Arial Black",16),relief="raise",bg='white',command=lambda val='B.Sc-Geo':college(val))
+    Sci2.place(x=260,y=350,width=220,height=50)
+    reback=Button(canvas,text='BACK',font=("algerian",15),borderwidth=2,relief="raise",bg='red',fg='black',command=login)
+    reback.place(x=390,y=460,width = 100,height = 30)
+
+def commerce():
+    global canvas
+    canvas.destroy()
+    canvas=Canvas(window,bg="black",height=500,width=500,relief='raise')
+    canvas.place(x=0,y=0)
+    canvas.create_text(250, 50, text='COMMERCE', fill="WHITE", font=('Stencil',30,'bold'))
+    Sci1=Button(canvas,text='BBA',font=("Arial Black",16),relief="raise",bg='white',command=lambda val='BBA':college(val))
+    Sci1.place(x=20,y=110,width=140,height=50)
+    Sci2=Button(canvas,text='BFA',font=("Arial Black",16),relief="raise",bg='white',command=lambda val='BFA':college(val))
+    Sci2.place(x=180,y=110,width=140,height=50)
+    Sci3=Button(canvas,text='CA',font=("Arial Black",16),relief="raise",bg='white',command=lambda val='CA':college(val))
+    Sci3.place(x=340,y=110,width=140,height=50)
+    
+    Sci1=Button(canvas,text='C-S',font=("Arial Black",16),relief="raise",bg='white',command=lambda val='C-S':college(val))
+    Sci1.place(x=20,y=190,width=140,height=50)
+    Sci2=Button(canvas,text='B.COM',font=("Arial Black",16),relief="raise",bg='white',command=lambda val='B.COM':college(val))
+    Sci2.place(x=180,y=190,width=140,height=50)
+    Sci3=Button(canvas,text='BBI',font=("Arial Black",16),relief="raise",bg='white',command=lambda val='BBI':college(val))
+    Sci3.place(x=340,y=190,width=140,height=50)
+    
+    Sci1=Button(canvas,text='BE',font=("Arial Black",16),relief="raise",bg='white',command=lambda val='BE':college(val))
+    Sci1.place(x=20,y=270,width=140,height=50)
+    Sci2=Button(canvas,text='BCA',font=("Arial Black",16),relief="raise",bg='white',command=lambda val='BCA':college(val))
+    Sci2.place(x=180,y=270,width=140,height=50)
+    Sci3=Button(canvas,text='BFM',font=("Arial Black",16),relief="raise",bg='white',command=lambda val='BFM':college(val))
+    Sci3.place(x=340,y=270,width=140,height=50)
+    
+    Sci1=Button(canvas,text='MASS-COM',font=("Arial Black",16),relief="raise",bg='white',command=lambda val='MASS-COM':college(val))
+    Sci1.place(x=20,y=350,width=220,height=50)
+    Sci2=Button(canvas,text='VISUAL-COM',font=("Arial Black",16),relief="raise",bg='white',command=lambda val='VISUAL-COM':college(val))
+    Sci2.place(x=260,y=350,width=220,height=50)
+    reback=Button(canvas,text='BACK',font=("algerian",15),borderwidth=2,relief="raise", bg='red',fg='black',command=login)
+    reback.place(x=390,y=460,width = 100,height = 30)
+
+def arts():
+    global canvas
+    canvas.destroy()
+    canvas=Canvas(window,bg="black",height=500,width=500,relief='raise')
+    canvas.place(x=0,y=0)
+    canvas.create_text(250, 50, text='ARTS', fill="WHITE", font=('Stencil',30,'bold'))
+    Sci1=Button(canvas,text='LLB',font=("Arial Black",16),relief="raise",bg='white',command=lambda val='LLB':college(val))
+    Sci1.place(x=20,y=110,width=140,height=50)
+    Sci2=Button(canvas,text='BEM',font=("Arial Black",16),relief="raise",bg='white',command=lambda val='BEM':college(val))
+    Sci2.place(x=180,y=110,width=140,height=50)
+    Sci3=Button(canvas,text='BJMC',font=("Arial Black",16),relief="raise",bg='white',command=lambda val='BJMC':college(val))
+    Sci3.place(x=340,y=110,width=140,height=50)
+    
+    Sci1=Button(canvas,text='BFD',font=("Arial Black",16),relief="raise",bg='white',command=lambda val='BFD':college(val))
+    Sci1.place(x=20,y=190,width=140,height=50)
+    Sci2=Button(canvas,text='BSW',font=("Arial Black",16),relief="raise",bg='white',command=lambda val='BSW':college(val))
+    Sci2.place(x=180,y=190,width=140,height=50)
+    Sci3=Button(canvas,text='B.Design',font=("Arial Black",16),relief="raise",bg='white',command=lambda val='B.Design':college(val))
+    Sci3.place(x=340,y=190,width=140,height=50)
+    
+    Sci1=Button(canvas,text='BPA',font=("Arial Black",16),relief="raise",bg='white',command=lambda val='BPA':college(val))
+    Sci1.place(x=20,y=270,width=140,height=50)
+    Sci2=Button(canvas,text='BA His',font=("Arial Black",16),relief="raise",bg='white',command=lambda val='BA His':college(val))
+    Sci2.place(x=180,y=270,width=140,height=50)
+    Sci3=Button(canvas,text='BA-POL',font=("Arial Black",16),relief="raise",bg='white',command=lambda val='BA-POL':college(val))
+    Sci3.place(x=340,y=270,width=140,height=50)
+    reback=Button(canvas,text='BACK',font=("algerian",15),borderwidth=2,relief="raise",bg='red',fg='black',command=login)
+    reback.place(x=390,y=460,width = 100,height = 30)
+  
+def login():
+    global canvas
+    canvas.destroy()
+    canvas=Canvas(window,bg="brown",height=500,width=500,relief='raise')
+    canvas.place(x=0,y=0)
+    canvas.create_image(0,0,image=bg,anchor=NW)
+    canvas.create_text(250, 50, text='College Finder', fill="WHITE", font=('Stencil',30,'bold'))
+    Sci=Button(canvas,text='SCIENCE',font=("Arial Black",20),relief="raise",bg='white',command=Sci_page)
+    Sci.place(x=150,y=120,width=220,height=50)
+    com=Button(canvas,text='COMMERCE',font=("Arial Black",20),relief="raise",bg='white',command=commerce)
+    com.place(x=150,y=200,width=220,height=50)
+    Arts=Button(canvas,text='ARTS',font=("Arial Black",20),relief="raise",bg='white',command=arts)
+    Arts.place(x=150,y=280,width=220,height=50)
+    button=Button(canvas,text='LOGOUT',font=("algerian",15),borderwidth=3,relief="raise",bg='red',fg='black',command=Main_page)
+    button.place(x=390,y=460,width=100,height=30)
+
+def Main_page():
+    def check():
+        cur.execute("select username,password from future_applicants where username='{}'".format(e1.get()))
+        rec=cur.fetchone()
+        if e1.get()!='' or e2.get()!='':
+            try:
+                if e1.get()==rec[0] and e2.get()==rec[1]:
+                    login()
+            except:
+                messagebox.showinfo("Warning",'INVALID USERNAME/PASSWORD')
+        else:
+            messagebox.showinfo("Warning",'INVALID USERNAME/PASSWORD')
+
+    global canvas
+    canvas.destroy()
+    canvas=Canvas(window,bg="Yellow",height=500,width=500,relief='raise')
+    canvas.place(x=0,y=0)
+    canvas.create_image(0,0,image=bg,anchor=NW)
+    canvas.create_text(250, 100, text='FUTURE CAREER', fill="WHITE", font=('Stencil',30,'bold'))
+    canvas.create_text(160, 185, text='Username:', fill="WHITE", font=('Stencil',16,'bold'))
+    canvas.create_text(160, 245, text='Password:', fill="WHITE", font=('Stencil',16,'bold'))
+    e1=Entry(canvas,font=("Constantia",16),borderwidth=1,width=20)
+    e1.place(x=240,y=170,height=25,width=160)
+    e2=Entry(canvas,font=("Constantia",16),borderwidth=1,width=20,show="*")
+    e2.place(x=240,y=230,height=25,width=160)
+    button1=Button(canvas,text='SignUp',font=("algerian",12),borderwidth=2,relief="raise",bg='white',fg='black',command=Registration)
+    button1.place(x=370,y=460, width = 120,height = 30)
+    button2=Button(canvas,text='Log in',font=("algerian",15),borderwidth=3,relief="raise",bg='white',fg='black',command=check)
+    button2.place(x=210,y=315, width = 120,height = 30)
+    
+window=Tk()
+window.geometry('500x500')
+window.config(bg='Brown')
+bg=PhotoImage(file=f"book.png")
+canvas=Canvas(window,bg="yellow",height=500,width=500,relief='raise')
+canvas.place(x=0,y=0)
+Main_page()
+window.title('Future Career')
+window.resizable(False,False)
+window.mainloop()
